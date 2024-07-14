@@ -1,32 +1,39 @@
-// workaround issue between gcc >= 4.7 and cuda 5.5
-#if (defined __GNUC__) && (__GNUC__>4 || __GNUC_MINOR__>=7)
-  #undef _GLIBCXX_ATOMIC_BUILTINS
-  #undef _GLIBCXX_USE_INT128
-#endif
-
-#include <Eigen/Dense>
-// #include "/usr/local/include/eigen3/Eigen/Dense"
 #include "test.h"
 
-
 // CUDA kernel definition
-__global__ void myKernel(FuncPtr funcPtr) {
-    hostFunc(40);  // Call the function pointer in CUDA kernel
+template<typename Type>
+__global__ void myKernel(CudaClass<Type>* CudaTest) {   
+    CudaTest -> setvalue(5.111);
+    printf("Device Value = %lf\n", CudaTest->getvalue());
 }
 
-__host__ __device__ void hostFunc(int x) {
-    printf("Host Function called with argument %d\n", x);
+
+template <typename Type>
+__host__ __device__ void CudaClass<Type>::add(Type& x){
+    value += x;
 }
 
 
-void test(FuncPtr function){
+template <typename Type>
+void test(CudaClass<Type> myClass){
 
+    CudaClass<Type>* class_gpu;
+    cudaMalloc(&class_gpu, sizeof(CudaClass<Type>));
+    cudaMemcpy(class_gpu, &myClass, sizeof(CudaClass<Type>), cudaMemcpyHostToDevice);
+    
     // Launching CUDA kernel with host function pointer
-    myKernel<<<1, 1>>>(hostFunc);
+    myKernel<<<1, 1>>>(class_gpu);
     cudaDeviceSynchronize();
+    cudaMemcpy(&myClass, class_gpu, sizeof(CudaClass<Type>), cudaMemcpyDeviceToHost);
+
+
+    std::cout << "Host Value after using Kernel= " << myClass.getvalue() << std::endl;
 
     cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess) {
         fprintf(stderr, "CUDA error: %s\n", cudaGetErrorString(err));
     }
 }
+
+template void test<int>(CudaClass<int>);
+template void test<double>(CudaClass<double>);

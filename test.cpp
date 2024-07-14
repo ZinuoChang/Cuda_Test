@@ -1,18 +1,15 @@
 #include "test.h"
 
-
-// // Host function
-// void hostFunc(int x) {
-//     printf("Host Function called with argument %d\n", x);
-// }
-
+// using Cudafunction = std::function
 
 int main() {
-    FuncPtr pointer = hostFunc;
-    std::cout << "CPU:" << std::endl;
-    pointer(10);
+    CudaClass<double> myClass(7.6);
+    std::cout << "Initial Value = " << myClass.getvalue() << std::endl;
+
+    myClass.setvalue(10.01);
+    std::cout << "Host Value = " << myClass.getvalue() << std::endl;
     
-    test(pointer);
+    test(myClass);
 
     return 0;
 }
