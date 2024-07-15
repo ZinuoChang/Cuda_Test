@@ -2,6 +2,7 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <Eigen/Dense>
+#include <chrono>
 // #include <nvfunctional>
 // #include <functional>
 
@@ -27,24 +28,42 @@ public:
 
     __host__ __device__ inline Type getvalue() const{return value;}
 
+    __host__ __device__ inline void add(Type& x){value += x;}
+
      inline void setmatrix(MatrixXd& matrix){_matrix = matrix;}
 
      inline void setvectors(MatrixXd& vectorMatrix){_vectorMatrix = vectorMatrix;}
 
      inline void setresult(MatrixXd& result){_result = result;}
 
-    __host__ __device__ void add(Type& x);
-
      MatrixXd MatrixMul(MatrixXd& matrix, MatrixXd& vectorMatrix);
 
      MatrixXd MatrixMul_array(MatrixXd& matrix, MatrixXd& vectorMatrix);
 
     void test(){
+        auto start = std::chrono::high_resolution_clock::now();
         MatrixXd result_cpu = _matrix * _vectorMatrix;
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::cout << "Elapsed time Eigen: " << elapsed.count() << " seconds" << std::endl;
 
+        // std::cout << result_cpu << std::endl;
+
+        auto start1 = std::chrono::high_resolution_clock::now();
         MatrixXd result_gpu = MatrixMul(_matrix, _vectorMatrix);
+        auto end1 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed1 = end1 - start1;
+        std::cout << "Elapsed time Cuda: " << elapsed1.count() << " seconds" << std::endl;
 
-        // MatrixXd result_array = MatrixMul_array(_matrix, _vectorMatrix);
+        // std::cout << result_gpu << std::endl;
+
+        auto start2 = std::chrono::high_resolution_clock::now();
+        MatrixXd result_array = MatrixMul_array(_matrix, _vectorMatrix);
+        auto end2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed2 = end2 - start2;
+        std::cout << "Elapsed time Cuda_array: " << elapsed1.count() << " seconds" << std::endl;
+
+        // std::cout << result_array << std::endl;
     }
 
     // void 
