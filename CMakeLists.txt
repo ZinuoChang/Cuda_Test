@@ -34,7 +34,7 @@ find_package(CUDA REQUIRED)
 include_directories(${CUDA_INCLUDE_DIRS})
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 set(CUDA_ARCH "sm_86") #Change it based on the GPU
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -arch=${CUDA_ARCH}; -std=c++17; --expt-extended-lambda; --expt-relaxed-constexpr)
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -arch=${CUDA_ARCH}; --expt-relaxed-constexpr)
 
 # Specify the CUDA standard
 # set(CMAKE_CUDA_STANDARD 17)

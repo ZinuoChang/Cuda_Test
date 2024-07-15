@@ -30,6 +30,10 @@ public:
 
     __host__ __device__ inline void add(Type& x){value += x;}
 
+    __host__ __device__ inline void multiplication(MatrixXd& matrix, MatrixXd& vectorMatrix, double* result, int row, int col){
+        result[col*matrix.rows() + row] = matrix.row(row) * vectorMatrix.col(col);
+    }
+
      inline void setmatrix(MatrixXd& matrix){_matrix = matrix;}
 
      inline void setvectors(MatrixXd& vectorMatrix){_vectorMatrix = vectorMatrix;}
@@ -66,19 +70,20 @@ public:
         // std::cout << result_array << std::endl;
     }
 
+    MatrixXd _matrix, _vectorMatrix, _result;
     // void 
 
 protected:
     Type value;
     int _rows, _cols, _vec_num;
-    MatrixXd _matrix, _vectorMatrix, _result;
+    
 };
 
-template<typename Type>
-__global__ void myKernel(CudaClass<Type>* CudaTest);
+// template<typename Type>
+// __global__ void myKernel(CudaClass<Type>* CudaTest);
 
 
-__global__ void MatMul(MatrixXd& matrix, MatrixXd& vectorMatrix, MatrixXd& result);
+// __global__ void MatMul(MatrixXd& matrix, MatrixXd& vectorMatrix, MatrixXd& result, CudaClass* instance);
 
 
 // template <typename Type>

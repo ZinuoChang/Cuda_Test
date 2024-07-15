@@ -4,9 +4,9 @@
 
 int main() {
     // Define dimensions
-    int rows = 3000;
-    int cols = 10000;
-    int vec_num = 3000;
+    int rows = 10;
+    int cols = 5;
+    int vec_num = 6;
 
     // Generate the matrices randomly
     MatrixXd matrix = MatrixXd::Random(rows, cols);
@@ -30,7 +30,7 @@ int main() {
     myClass.setmatrix(matrix);
     myClass.setvectors(vectorMatrix);
 
-    // std::cout << "Initial Value = " << myClass.getvalue() << std::endl;
+    std::cout << "Initial Value = " << myClass.getvalue() << std::endl;
 
     // myClass.setvalue(10.01);
     // std::cout << "Host Value = " << myClass.getvalue() << std::endl;
