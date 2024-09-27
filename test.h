@@ -30,8 +30,19 @@ public:
 
     __host__ __device__ inline void add(Type& x){value += x;}
 
-    __host__ __device__ inline void multiplication(MatrixXd& matrix, MatrixXd& vectorMatrix, double* result, int row, int col){
+    __host__ __device__ inline void multiplication(const MatrixXd& matrix, const MatrixXd& vectorMatrix, double* result, int row, int col){
         result[col*matrix.rows() + row] = matrix.row(row) * vectorMatrix.col(col);
+    }
+
+    __host__ __device__ inline void multiplication_vec(const VectorXd& matrix, const VectorXd& vectorMatrix, double* result, int row, int col, int mat_rows){
+        // double sum = 0;
+        // for (int i = 0; i < matrix.size(); i++)
+        //     sum += matrix(i) * vectorMatrix(i);
+        // result[col*mat_rows + row] = sum;
+
+        // result[col*mat_rows + row] = matrix.dot(vectorMatrix);
+
+        result[col*mat_rows + row] = matrix.transpose() * vectorMatrix;
     }
 
      inline void setmatrix(MatrixXd& matrix){_matrix = matrix;}
@@ -40,16 +51,20 @@ public:
 
      inline void setresult(MatrixXd& result){_result = result;}
 
+     __host__ __device__ void multiplication_dynamic(const double* matrix, const double* vectorMatrix, CudaClass<Type>* pointer, double* result, int row, int col, int rows, int cols, int vec_num);
+
      MatrixXd MatrixMul(MatrixXd& matrix, MatrixXd& vectorMatrix);
 
      MatrixXd MatrixMul_array(MatrixXd& matrix, MatrixXd& vectorMatrix);
 
+     MatrixXd MatrixMul_Dynamic(MatrixXd& matrix, MatrixXd& vectorMatrix);
+
     void test(){
-        auto start = std::chrono::high_resolution_clock::now();
-        MatrixXd result_cpu = _matrix * _vectorMatrix;
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        std::cout << "Elapsed time Eigen: " << elapsed.count() << " seconds" << std::endl;
+        // auto start = std::chrono::high_resolution_clock::now();
+        // MatrixXd result_cpu = _matrix * _vectorMatrix;
+        // auto end = std::chrono::high_resolution_clock::now();
+        // std::chrono::duration<double> elapsed = end - start;
+        // std::cout << "Elapsed time Eigen: " << elapsed.count() << " seconds" << std::endl;
 
         // std::cout << result_cpu << std::endl;
 
@@ -65,9 +80,17 @@ public:
         MatrixXd result_array = MatrixMul_array(_matrix, _vectorMatrix);
         auto end2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed2 = end2 - start2;
-        std::cout << "Elapsed time Cuda_array: " << elapsed1.count() << " seconds" << std::endl;
+        std::cout << "Elapsed time Cuda_array: " << elapsed2.count() << " seconds" << std::endl;
+
+        // auto start3 = std::chrono::high_resolution_clock::now();
+        // MatrixXd result_Dynamics = MatrixMul_Dynamic(_matrix, _vectorMatrix);
+        // auto end3 = std::chrono::high_resolution_clock::now();
+        // std::chrono::duration<double> elapsed3 = end3 - start3;
+        // std::cout << "Elapsed time Cuda_array: " << elapsed3.count() << " seconds" << std::endl;
 
         // std::cout << result_array << std::endl;
+        // std::cout << "Error of GPU = " << (result_cpu - result_gpu).norm() << std::endl;
+        std::cout << "Error of Array = " << (result_gpu - result_array).norm() << std::endl;
     }
 
     MatrixXd _matrix, _vectorMatrix, _result;

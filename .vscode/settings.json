@@ -53,6 +53,10 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "bit": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "cinttypes": "cpp",
+        "typeindex": "cpp"
     }
 }
